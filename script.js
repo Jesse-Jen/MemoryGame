@@ -1,4 +1,8 @@
 const gameContainer = document.getElementById("game");
+card1 = null
+card2 = null
+let cardCount = 0;
+let noClicking = false;
 
 const COLORS = [
   "red",
@@ -59,9 +63,43 @@ function createDivsForColors(colorArray) {
 
 // TODO: Implement this function!
 function handleCardClick(event) {
-  // you can use event.target to see which element was clicked
-  console.log("you just clicked", event.target);
-}
+  if(noClicking) return
+  if(event.target.classList.contains("flipped")) return
+  let selectedCard = event.target
+  selectedCard.style.backgroundColor = selectedCard.classList[0]
+  //setting values of two cards
+  if(!card1 || !card2){
+    card1 = card1 || selectedCard
+    card2 = selectedCard === card1 ? null : selectedCard
+  }
+  
+  //checks
+  if(card1 && card2){
+    noClicking = true;
 
+  if(card1.className === card2.className){
+   cardCount = cardCount + 2
+   noClicking = false
+   card1.removeEventListener('click', handleCardClick)
+   card2.removeEventListener('click', handleCardClick)
+   card1 = null
+   card2 = null
+  } else {
+    setTimeout(function(){
+      //lines must be in this order
+      card1.style.backgroundColor = ""
+      card2.style.backgroundColor = ""
+      card1.classList.remove('flipped')
+      card2.classList.remove('flipped')
+      card1 = null
+      card2 = null
+      noClicking = false
+    }, 1000)
+  }
+
+  }
+
+  if(cardCount === COLORS.length) alert('You Win!')
+}
 // when the DOM loads
 createDivsForColors(shuffledColors);
